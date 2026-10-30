@@ -1,4 +1,4 @@
-FROM php:8.3-apache
+FROM php:8.4-apache
 RUN apt-get update && apt-get install -y git unzip && rm -rf /var/lib/apt/lists/*
 RUN docker-php-ext-install pdo pdo_mysql && a2enmod rewrite
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
@@ -6,7 +6,7 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 COPY . .
-RUN composer install --no-dev --optimize-autoloader --no-interaction \
- && mkdir -p storage/framework/{cache,sessions,views} bootstrap/cache \
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
+RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
  && chown -R www-data:www-data storage bootstrap/cache
 EXPOSE 80
