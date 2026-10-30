@@ -29,7 +29,7 @@ pipeline {
         sh '''
           kubectl get pods,svc
           sleep 5
-          curl -s http://localhost:30080/dbcheck
+          curl -s --retry 30 --retry-delay 5 --retry-connrefused http://localhost:30080/dbcheck
         '''
       }
     }

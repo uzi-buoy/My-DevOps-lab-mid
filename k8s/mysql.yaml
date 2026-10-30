@@ -14,6 +14,8 @@ metadata:
   name: mysql
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels: {app: mysql}
   template:
@@ -32,6 +34,12 @@ spec:
           valueFrom: {secretKeyRef: {name: laravel-secret, key: DB_PASSWORD}}
         - name: MYSQL_ROOT_PASSWORD
           valueFrom: {secretKeyRef: {name: laravel-secret, key: MYSQL_ROOT_PASSWORD}}
+        readinessProbe:
+          exec:
+            command: ["sh","-c","mysqladmin ping -h 127.0.0.1 -uroot -p$MYSQL_ROOT_PASSWORD"]
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          failureThreshold: 30
         volumeMounts:
         - {name: data, mountPath: /var/lib/mysql}
       volumes:
